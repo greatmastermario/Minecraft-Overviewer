@@ -39,7 +39,10 @@ def get_program_path():
             return os.path.dirname(sys.argv[0])
 
 def is_frozen(module_name):
-    spec = importlib.util.find_spec(module_name)
+    try:
+        spec = importlib.util.find_spec(module_name)
+    except ValueError:
+        spec = None
     return spec is not None and spec.origin == 'frozen'
 
 
