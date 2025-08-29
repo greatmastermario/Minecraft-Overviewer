@@ -15,7 +15,7 @@
 
 from collections import OrderedDict
 import sys
-import imp
+import importlib.util
 import os
 import os.path
 import zipfile
@@ -64,6 +64,9 @@ class TextureException(Exception):
 color_map = ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
              "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"]
 
+def is_frozen(module_name):
+    spec = importlib.util.find_spec(module_name)
+    return spec is not None and spec.origin == 'frozen'
 
 ##
 ## Textures object
@@ -197,7 +200,7 @@ class Textures(object):
         if os.path.isfile(path):
             if verbose: logging.info("Found %s in '%s'", filename, path)
             return open(path, mode)
-        elif hasattr(sys, "frozen") or imp.is_frozen("__main__"):
+        elif hasattr(sys, "frozen") or is_frozen("__main__"):
             # windows special case, when the package dir doesn't exist
             path = os.path.join(programdir, "textures", filename)
             if os.path.isfile(path):
